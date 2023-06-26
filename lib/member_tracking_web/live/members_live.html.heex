@@ -1,0 +1,11 @@
+
+<h2>Google Group Members</h2>
+<hr/>
+<ol>
+<%= for member <- @google_group_members do %>
+   <li class="list-decimal">
+      <a href={"mailto:#{member.email}"}><%= member.email %></a>
+   </li>
+<% end %>
+</ol>
+
