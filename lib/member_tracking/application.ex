@@ -16,10 +16,11 @@ defmodule MemberTracking.Application do
       {Phoenix.PubSub, name: MemberTracking.PubSub},
       # Start Finch
       {Finch, name: MemberTracking.Finch},
+      # Sync google group status every day
+      {MemberTracking.Google.Groups, Application.get_env(
+          :member_tracking, MemberTracking.Google.Groups)[:group]},
       # Start the Endpoint (http/https)
       MemberTrackingWeb.Endpoint
-      # Start a worker by calling: MemberTracking.Worker.start_link(arg)
-      # {MemberTracking.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

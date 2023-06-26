@@ -45,4 +45,4 @@ npm-debug.log
 /.direnv/
 
 /ops/localstate.*
-/ops/secrets/
+/secrets/

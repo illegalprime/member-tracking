@@ -7,6 +7,10 @@
 # General application configuration
 import Config
 
+config :member_tracking, MemberTracking.Google.Groups,
+  group: "members@bostontenants.org",
+  admin: "info@bostontenants.org"
+
 config :member_tracking,
   ecto_repos: [MemberTracking.Repo]
 

@@ -49,6 +49,8 @@ defmodule MemberTracking.MixProject do
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
+      {:goth, "~> 1.2.0"},
+      {:google_api_admin, "~> 0.38"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"}
     ]
