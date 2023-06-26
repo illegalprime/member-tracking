@@ -20,6 +20,13 @@ if System.get_env("PHX_SERVER") do
   config :member_tracking, MemberTrackingWeb.Endpoint, server: true
 end
 
+config :member_tracking, MemberTracking.Paypal.Api,
+  client_id: System.get_env("PAYPAL_CLIENT_ID"),
+  client_secret: System.get_env("PAYPAL_CLIENT_SECRET")
+
+config :member_tracking, MemberTrackingWeb.Router,
+  api_key: System.get_env("API_KEY")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

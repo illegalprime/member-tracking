@@ -3,6 +3,11 @@ defmodule MemberTrackingWeb.Router do
 
   import MemberTrackingWeb.UserAuth
 
+  defp api_auth(conn, _opts) do
+    password = Application.get_env(:member_tracking, __MODULE__)[:api_key]
+    Plug.BasicAuth.basic_auth(conn, username: "api", password: password)
+  end
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -15,6 +20,7 @@ defmodule MemberTrackingWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :api_auth
   end
 
   scope "/", MemberTrackingWeb do
@@ -26,10 +32,10 @@ defmodule MemberTrackingWeb.Router do
     end
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", MemberTrackingWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", MemberTrackingWeb do
+    pipe_through :api
+    put "/paypal/subscriptions/add/:subscriber", SubscriberController, :add
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:member_tracking, :dev_routes) do
