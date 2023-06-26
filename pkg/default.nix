@@ -15,7 +15,7 @@ in
 buildMix {
   pname = "member-tracking";
   version = "0.1.0";
-  mixSha256 = "sha256-890JmrVI0/erubcr8he8gX0g4Hf7CicZYG3aZ7PA49E=";
+  mixSha256 = "sha256-8j4gu4sHNPW6kFOtFHXURgH0QB1Es0KVTU4ekamzeD0=";
   src = builtins.fetchGit ../.;
 
   impureEnvVars = [
