@@ -1,0 +1,90 @@
+{ stdenv, elixir, hex, rebar, rebar3, fetchMixDeps, erlang, glibcLocales, esbuild, callPackage, nodePackages }:
+
+{ name ? "${args.pname}-${args.version}"
+, mixSha256 ? null
+, src ? null
+, sourceRoot ? null
+, buildInputs ? []
+, nativeBuildInputs ? []
+, buildType ? "release"
+, meta ? {}
+, mixEnv ? "prod"
+, impureMixRebar ? false
+, ... } @ args:
+
+let
+  mixDeps = fetchMixDeps {
+    inherit src name mixEnv;
+    sha256 = mixSha256;
+  };
+  node_modules = callPackage ./node-modules.nix {};
+in stdenv.mkDerivation (args // {
+  dontStrip = true;
+
+  nativeBuildInputs = nativeBuildInputs ++ [ hex elixir erlang ];
+
+  LOCALE_ARCHIVE = "${glibcLocales}/lib/locale/locale-archive";
+  LANG = "en_US.UTF-8";
+  LC_ALL = "en_US.UTF-8";
+
+  MIX_ENV = mixEnv;
+  HEX_OFFLINE = 1;
+
+  setRebar = if impureMixRebar
+             then "mix local.rebar --force"
+             else ''
+             export MIX_REBAR="${rebar}/bin/rebar"
+             export MIX_REBAR3="${rebar3}/bin/rebar3"
+             '';
+
+  postUnpack = ''
+    export HEX_HOME="$TMPDIR/hex"
+    export MIX_HOME="$TMPDIR/mix"
+    export REBAR_GLOBAL_CONFIG_DIR="$TMPDIR/rebar3"
+    export REBAR_CACHE_DIR="$TMPDIR/rebar3.cache"
+    export MIX_DEPS_PATH="$TMPDIR/deps"
+
+    export NODE_PATH="$TMPDIR/deps"
+    export MIX_XGD=1
+    export XDG_CACHE_HOME="$TMPDIR"
+    export ESBUILD_BIN=${esbuild}/bin/esbuild
+    export TAILWIND_BIN=${nodePackages.tailwindcss}/bin/tailwind
+    export NODE_PATH="''${NODE_PATH}:${node_modules}"
+
+    $setRebar
+
+    cp --no-preserve=mode -R "${mixDeps}" "$MIX_DEPS_PATH"
+  '' + (args.postUnpack or "");
+
+  configurePhase = args.configurePhase or ''
+    runHook preConfigure
+
+    mix deps.compile --no-deps-check --skip-umbrella-children
+
+    mix assets.deploy
+
+    runHook postConfigure
+  '';
+
+  buildPhase = args.buildPhase or ''
+    runHook preBuild
+
+    mix phx.gen.release
+
+    mix do compile --no-deps-check, release --path "$out"
+
+    runHook postBuild
+  '';
+
+  installPhase = args.installPhase or ''
+    runHook preInstall
+    runHook postInstall
+  '';
+
+  checkPhase = args.checkPhase or ''
+    runHook preCheck
+    echo "Running mix test ''${checkFlags} ''${checkFlagsArray+''${checkFlagsArray[@]}}"
+    mix test ''${checkFlags} ''${checkFlagsArray+"''${checkFlagsArray[@]}"}
+    runHook postCheck
+  '';
+})

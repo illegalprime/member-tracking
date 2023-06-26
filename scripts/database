@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export PGHOST="${PGDATA}/run"
+
+# create database
+[[ -d "$PGDATA" ]] || initdb -D "$PGDATA"
+
+# configure socket location
+if [[ ! -d "$PGHOST" ]]; then
+    echo "unix_socket_directories = '${PGHOST}'" >> "${PGDATA}/postgresql.conf"
+    mkdir "${PGHOST}"
+fi
+
+# start/stop the database
+pg_ctl -l "${PGDATA}/server.log" "$1"
+
+# create user on first run
+if [[ ! -f "${PGDATA}/.mkusr" && "$1" = 'start' ]]; then
+    createuser -s postgres
+    touch "${PGDATA}/.mkusr"
+fi
