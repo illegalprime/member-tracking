@@ -1,11 +1,30 @@
 
-<h2>Google Group Members</h2>
+<h2>People</h2>
 <hr/>
+
+<table>
+   <tr>
+      <td>email</td>
+      <td>google group</td>
+      <td>paypal</td>
+   </tr>
+   <%= for {email, person} <- @people do %>
+       <tr>
+           <td><%= email %></td>
+           <%= if Map.has_key?(person, :google) do %>
+               <td><%= person.google.role %></td>
+           <% else %>
+               <td></td>
+           <% end %>
+           <%= if Map.has_key?(person, :paypal) do %>
+               <td><%= person.paypal.status %></td>
+           <% else %>
+               <td></td>
+           <% end %>
+       </tr>
+   <% end %>
+</table>
+
 <ol>
-<%= for member <- @google_group_members do %>
-   <li class="list-decimal">
-      <a href={"mailto:#{member.email}"}><%= member.email %></a>
-   </li>
-<% end %>
 </ol>
 
