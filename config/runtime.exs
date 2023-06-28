@@ -24,6 +24,9 @@ config :member_tracking, MemberTracking.Paypal.Api,
   client_id: System.get_env("PAYPAL_CLIENT_ID"),
   client_secret: System.get_env("PAYPAL_CLIENT_SECRET")
 
+config :member_tracking, MemberTracking.Paypal.Api.Webhooks,
+  id: System.get_env("PAYPAL_WEBHOOK_ID")
+
 config :member_tracking, MemberTrackingWeb.Router,
   api_key: System.get_env("API_KEY")
 

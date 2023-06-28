@@ -23,6 +23,10 @@ defmodule MemberTrackingWeb.Router do
     plug :api_auth
   end
 
+  pipeline :webhook do
+    plug :accepts, ["json"]
+  end
+
   scope "/", MemberTrackingWeb do
     pipe_through [:browser, :require_authenticated_user]
 
@@ -35,6 +39,11 @@ defmodule MemberTrackingWeb.Router do
   scope "/api", MemberTrackingWeb do
     pipe_through :api
     put "/paypal/subscriptions/add/:subscriber", SubscriberController, :add
+  end
+
+  scope "/webhook", MemberTrackingWeb do
+    pipe_through :webhook
+    post "/paypal", SubscriberController, :webhook
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

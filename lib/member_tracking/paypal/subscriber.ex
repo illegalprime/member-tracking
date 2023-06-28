@@ -22,30 +22,36 @@ defmodule MemberTracking.Paypal.Subscriber do
     timestamps()
   end
 
+  @required [
+    :subscription, :subscriber, :plan,
+    :status, :email, :first_name, :last_name, :last_payment,
+    :create, :start, :update, :status_update, :next_billing_time,
+  ]
+
   @doc false
   def changeset(subscriber, attrs) do
     subscriber
-    |> cast(attrs, [:plan, :subscription, :subscriber, :status, :first_name, :last_name, :email, :last_payment, :start, :create, :update, :status_update, :next_billing_time])
-    |> validate_required([:plan, :subscription, :subscriber, :status, :first_name, :last_name, :email, :last_payment, :start, :create, :update, :status_update, :next_billing_time])
+    |> cast(attrs, @required)
+    |> validate_required(@required)
   end
 
   def from_subscription(subscription) do
     %__MODULE__{
-      subscription: subscription.id,
-      subscriber: subscription.subscriber.payer_id,
-      plan: Map.get(subscription, :plan_id),
+      subscription: subscription["id"],
+      subscriber: subscription["subscriber"]["payer_id"],
+      plan: Map.get(subscription, "plan_id"), # can be nil
 
-      status: subscription.status,
-      email: subscription.subscriber.email_address,
-      first_name: subscription.subscriber.name.given_name,
-      last_name: subscription.subscriber.name.surname,
-      last_payment: subscription.billing_info.last_payment,
+      status: subscription["status"],
+      email: subscription["subscriber"]["email_address"],
+      first_name: subscription["subscriber"]["name"]["given_name"],
+      last_name: subscription["subscriber"]["name"]["surname"],
+      last_payment: subscription["billing_info"]["last_payment"],
 
-      create: time!(subscription.create_time),
-      start: time!(subscription.start_time),
-      update: time!(subscription.update_time),
-      status_update: time!(subscription.status_update_time),
-      next_billing_time: time!(Map.get(subscription.billing_info, :next_billing_time)),
+      create: time!(subscription["create_time"]),
+      start: time!(subscription["start_time"]),
+      update: time!(subscription["update_time"]),
+      status_update: time!(subscription["status_update_time"]),
+      next_billing_time: time!(Map.get(subscription["billing_info"], "next_billing_time")),
     }
   end
 

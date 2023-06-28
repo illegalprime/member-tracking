@@ -12,15 +12,22 @@ defmodule MemberTracking.Paypal.Api do
 
     case HTTPoison.post(@base_url <> "oauth2/token", form, headers, options) do
       {:ok, %{body: body, status_code: 200}} ->
-        %{access_token: access_token, expires_in: expires_in} = Poison.decode!(body, keys: :atoms)
-        {:ok, {access_token, expires_in}}
+        %{access_token: token, expires_in: expires} = Poison.decode!(body, keys: :atoms)
+        {:ok, {token, expires}}
       {_, error} -> {:error, error}
     end
   end
 
   def get(token, url) do
     case HTTPoison.get(@base_url <> url, headers(token)) do
-      {:ok, %{body: body, status_code: 200}} -> {:ok, Poison.decode!(body, keys: :atoms)}
+      {:ok, %{body: body, status_code: 200}} -> {:ok, Poison.decode!(body)}
+      {_, error} -> {:error, error}
+    end
+  end
+
+  def post(token, url, body) do
+    case HTTPoison.post(@base_url <> url, body, headers(token)) do
+      {:ok, %{body: body, status_code: 200}} -> {:ok, Poison.decode!(body)}
       {_, error} -> {:error, error}
     end
   end
