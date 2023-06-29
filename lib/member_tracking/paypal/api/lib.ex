@@ -18,8 +18,8 @@ defmodule MemberTracking.Paypal.Api do
     end
   end
 
-  def get(token, url) do
-    case HTTPoison.get(@base_url <> url, headers(token)) do
+  def get(token, url, params \\ []) do
+    case HTTPoison.get(@base_url <> url, headers(token), params: params) do
       {:ok, %{body: body, status_code: 200}} -> {:ok, Poison.decode!(body)}
       {_, error} -> {:error, error}
     end
