@@ -48,6 +48,7 @@ defmodule MemberTracking.MixProject do
       {:finch, "~> 0.13"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
+      {:timex, "~> 3.7"},
       {:gettext, "~> 0.20"},
       {:goth, "~> 1.2.0"},
       {:google_api_admin, "~> 0.38"},

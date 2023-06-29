@@ -64,6 +64,10 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# custom path to download tz data, since nix is read only
+# config :tzdata, :data_dir, System.get_env("TZ_DATA_DIR")
+config :tzdata, :autoupdate, :disabled
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

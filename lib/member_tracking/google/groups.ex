@@ -1,14 +1,17 @@
 defmodule MemberTracking.Google.Groups do
   use GenServer
+  alias MemberTracking.Sync
   alias MemberTracking.Google.GroupMember
   alias GoogleApi.Admin.Directory_v1.Api
   require Logger
+  @tag "google-groups"
   @scope "https://www.googleapis.com/auth/admin.directory.group"
+  @interval_s 24 * 60 * 60 # one day
 
   @impl true
   def handle_info(:sync, group) do
     # run again in one day
-    schedule()
+    Process.send_after(self(), :sync, @interval_s * 1000)
     # fold through pages of members of google group
     total = fold_members(group, 0, fn acc, members ->
       # create change set for database
@@ -23,7 +26,8 @@ defmodule MemberTracking.Google.Groups do
       acc + Enum.count(members)
     end)
     # log it
-    Logger.info("[google-group-sync] #{total} members of #{group}!")
+    Sync.touch(@tag)
+    Logger.info("[#{@tag}] #{total} members of #{group}!")
     {:noreply, group}
   end
 
@@ -42,12 +46,13 @@ defmodule MemberTracking.Google.Groups do
 
   @impl true
   def init(group) do
-    send(self(), :sync)
+    schedule()
     {:ok, group}
   end
 
   defp schedule() do
-    Process.send_after(self(), :sync, 24 * 60 * 60 * 1000) # one day
+    next = @interval_s - min(Sync.since(@tag), @interval_s)
+    Process.send_after(self(), :sync, next * 1000)
   end
 
   defp connect() do

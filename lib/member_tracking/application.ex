@@ -19,6 +19,8 @@ defmodule MemberTracking.Application do
       # Sync google group status every day
       {MemberTracking.Google.Groups, Application.get_env(
           :member_tracking, MemberTracking.Google.Groups)[:group]},
+      # Sync PayPal subscriptions every day
+      MemberTracking.Paypal.Sync,
       # Start the Endpoint (http/https)
       MemberTrackingWeb.Endpoint
     ]
