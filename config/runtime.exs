@@ -20,6 +20,13 @@ if System.get_env("PHX_SERVER") do
   config :member_tracking, MemberTrackingWeb.Endpoint, server: true
 end
 
+config :member_tracking, MemberTracking.Airtable.Api,
+  base: System.get_env("AIRTABLE_BASE"),
+  token: System.get_env("AIRTABLE_TOKEN")
+
+config :member_tracking, MemberTracking.Airtable.Api.Webhooks,
+  table: System.get_env("AIRTABLE_WEBHOOK_TABLE")
+
 config :member_tracking, MemberTracking.Paypal.Api,
   client_id: System.get_env("PAYPAL_CLIENT_ID"),
   client_secret: System.get_env("PAYPAL_CLIENT_SECRET")

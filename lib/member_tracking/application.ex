@@ -21,6 +21,9 @@ defmodule MemberTracking.Application do
           :member_tracking, MemberTracking.Google.Groups)[:group]},
       # Sync PayPal subscriptions every day
       MemberTracking.Paypal.Sync,
+      # Listen for changes in Airtable
+      {MemberTracking.Airtable.Api.Webhooks,
+       MemberTracking.Airtable.Api.Webhooks.table_id()},
       # Start the Endpoint (http/https)
       MemberTrackingWeb.Endpoint
     ]

@@ -44,6 +44,7 @@ defmodule MemberTrackingWeb.Router do
   scope "/webhook", MemberTrackingWeb do
     pipe_through :webhook
     post "/paypal", SubscriberController, :webhook
+    post "/airtable", AirtableController, :webhook
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

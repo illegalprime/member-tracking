@@ -19,4 +19,12 @@ defmodule MemberTracking.Paypal do
     Repo.one(from p in Subscriber,
       where: p.subscription == ^id, select: [:subscription, :status])
   end
+
+  def csv(path) do
+    text = Repo.all(Subscriber)
+    |> Enum.map(fn s -> "#{s.first_name},#{s.last_name},#{s.email},#{s.status}" end)
+    |> List.insert_at(0, "first_name,last_name,email,status")
+    |> Enum.join("\n")
+    File.write(path, text)
+  end
 end
