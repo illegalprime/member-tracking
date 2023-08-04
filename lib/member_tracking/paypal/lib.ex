@@ -12,7 +12,7 @@ defmodule MemberTracking.Paypal do
   end
 
   def subscriptions() do
-    Repo.all(from p in Subscriber, select: [:subscription, :status])
+    Repo.all(from p in Subscriber, select: [:subscription, :status, :email])
   end
 
   def status(id) do
