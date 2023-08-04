@@ -34,5 +34,6 @@ mkShell {
     export NODE_PATH="''${NODE_PATH}:${pwd}/deps"
     export NODE_PATH="''${NODE_PATH}:${pkgs.callPackage ./pkg/node-modules.nix {}}"
     export GOOGLE_APPLICATION_CREDENTIALS="${pwd}/secrets/gcloud.json";
+    source <(sed 's,^,export ,' ${pwd}/secrets/app)
   '';
 }
