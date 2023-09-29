@@ -10,6 +10,7 @@ mkShell {
 
   buildInputs = with pkgs; [
     elixir_1_14
+    elixir-ls
     postgresql_15
     nodejs-16_x
     yarn
