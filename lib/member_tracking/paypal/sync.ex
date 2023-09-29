@@ -3,6 +3,7 @@ defmodule MemberTracking.Paypal.Sync do
   alias MemberTracking.Sync
   alias MemberTracking.Paypal
   alias MemberTracking.Paypal.Api
+  alias MemberTracking.Airtable
   require Logger
   @tag "paypal"
   @interval_s 24 * 60 * 60 # one day
@@ -27,6 +28,10 @@ defmodule MemberTracking.Paypal.Sync do
     sync_recent_transactions(token)
     # update existing subscribers
     update_saved_subscriptions(token)
+    # update airtable with new status
+    leftover = Airtable.Api.Webhooks.table_id()
+    |> Airtable.sync_paypal_records()
+    Logger.info("[#{@tag}] could not sync: #{inspect(leftover)}")
     # save last record of sync
     Sync.touch(@tag)
     {:noreply, nil}
